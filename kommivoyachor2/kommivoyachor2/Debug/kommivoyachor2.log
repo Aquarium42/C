@@ -1,0 +1,9 @@
+﻿  Solvers.cpp
+d:\документы\codesvisiual\kommivoyachor2\kommivoyachor2\random.h(4): warning C4227: устаревший элемент: пропуск квалификаторов для ссылки
+d:\документы\codesvisiual\kommivoyachor2\kommivoyachor2\random.h(5): warning C4227: устаревший элемент: пропуск квалификаторов для ссылки
+d:\документы\codesvisiual\kommivoyachor2\kommivoyachor2\find_ways.h(14): warning C4227: устаревший элемент: пропуск квалификаторов для ссылки
+d:\документы\codesvisiual\kommivoyachor2\kommivoyachor2\solvers.cpp(34): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода...
+  Пропуск... (изменения не обнаружены)
+  kommivoyachor2.cpp
+  kommivoyachor2.vcxproj -> D:\Документы\codesVisiual\kommivoyachor2\Debug\kommivoyachor2.exe
