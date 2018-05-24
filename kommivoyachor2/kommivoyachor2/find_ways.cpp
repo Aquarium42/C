@@ -7,7 +7,7 @@ using namespace std;
 
 void finder_ways::make_odd_vertex( vector <int>& count, const graph_ & g, vector<vector<int> >& next_vertex) const {
 	vector<int> odd;//нечетные вершины
-	for (int i = 0; i < g.get_size(); i++) {
+	for (int i = 0; i < g.get_vertex_size(); i++) {
 		if (count[i] % 2 != 0) {
 			odd.push_back(i);
 		}
@@ -15,7 +15,7 @@ void finder_ways::make_odd_vertex( vector <int>& count, const graph_ & g, vector
 	vector <pair <double, pair<int, int> > > new_edges;
 	for (int i = 0; i < odd.size(); i++) {
 		for (int j = i + 1; j < odd.size(); j++) {
-			new_edges.push_back(make_pair(g.weigth(g.get_graph_self(odd[i]), g.get_graph_self(odd[j])), make_pair(odd[i], odd[j])));
+			new_edges.push_back(make_pair(g.weigth(odd[i], odd[j]), make_pair(odd[i], odd[j])));
 		}
 	}
 	//у нас все новые вершины теперь есть в new_edges. Мы хотим там построить минимальное паросочетание. Полученные пары будут добавочными ебрами.
@@ -60,7 +60,7 @@ void finder_ways::build_ostov_tree(int n, const graph_ & g, vector <vector<int> 
 double finder_ways::find_way(const graph_& g) const
 {
 	double way = 0;
-	int n = g.get_size();
+	int n = g.get_vertex_size();
 	vector <vector<int> > next_vertex(n);
 	build_ostov_tree(n, g, next_vertex);
 	//получила осовное дерево в виде ребер. Теперь нужно найти все вершины нечетной степени и соединить их.
@@ -76,14 +76,14 @@ double finder_ways::find_way(const graph_& g) const
 	pre_order(0, path, color, next_vertex);
 	for (int i = 0; i < path.size(); i++) {
 		if (i != path.size() - 1) {
-			way += g.weigth(g.get_graph_self(path[i]), g.get_graph_self(path[i + 1]));
+			way += g.weigth(path[i], path[i + 1]);
 		}
 	}
 	return way;
 }
 double finder_ways::find_real_way(const graph_& g) const
 {
-	int n = g.get_size();
+	int n = g.get_vertex_size();
 	double min_way = _MAX_INT_DIG;
 	double way = 0;
 	vector<int> index(n);
@@ -93,7 +93,7 @@ double finder_ways::find_real_way(const graph_& g) const
 	do {
 		way = 0;
 		for (int i = 0; i < index.size() -1; i++) {
-			way = way + g.weigth(g.get_graph_self(index[i]), g.get_graph_self(index[i + 1]));
+			way = way + g.weigth(index[i], index[i + 1]);
 		}
 		if (min_way > way) {
 			min_way = way;

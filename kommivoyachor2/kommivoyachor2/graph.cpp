@@ -1,18 +1,30 @@
 #include"stdafx.h"
 #include "graph.h"
 
-double graph_::weigth(Vertex left, Vertex right)const {
-	return sqrt(pow(left.x - right.x, 2) + pow(left.y - right.y, 2));
+double graph_::weigth(int left, int right)const {
+	return sqrt(pow(graphself[left].x - graphself[right].x, 2) + pow(graphself[left].y - graphself[right].y, 2));
 }
-
-int graph_::get_size() const {
+int graph_::get_vertex_size() const {
 	return n;
 }
 
-void graph_::get_edges(vector <pair <double, pair<int, int> > >& p) const{}
-
-Vertex graph_::get_graph_self(int index) const {
-	return graphself[index];
+void graph_::graph_init(int n_, int& time) {
+	double x, y;
+	resize(n_);
+	for (int i = 0; i < n_; i++) {
+		random_::take_random(x, y, time);
+		time++;
+		Vertex v;
+		v.x = x;
+		v.y = y;
+		set_vertex(i, v);
+	}
+	for (int i = 0; i < n_; i++) {
+		for (int j = i; j < n_; j++) {
+			add_edge(i, j);
+		}
+	}
+	sort_edges();
 }
 
 pair <double, pair<int, int> > graph_::get_edge(int i) const {
@@ -23,7 +35,7 @@ int graph_::get_edge_size() const {
 	return edges.size();
 }
 void graph_::add_edge(int i, int j) {
-	edges.push_back(make_pair(weigth(graphself[i], graphself[j]), make_pair(i, j)));
+	edges.push_back(make_pair(weigth(i, j), make_pair(i, j)));
 }
 void graph_::sort_edges() {
 	sort(edges.begin(), edges.end());

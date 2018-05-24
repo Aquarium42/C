@@ -6,17 +6,17 @@ public:
 	Solver_for_one_parameter(int n_, int count_test) {
 		n = n_;
 		count = count_test;
-		find_avarage_deviation();
+		mean_square = 0;
+		calculate_metrics();
 	}
-	void find_avarage_deviation();
-	void graph_init(graph_ & g, int n_);
 	double get_average_deviation() const;
 	double get_mean_square() const;
-
 private:
+	void calculate_metrics();
 	std::vector<double> norms;
 	int n, count, time;
 	double average;
+	double mean_square;
 };
 class Solver_for_many_parameters {
 public:Solver_for_many_parameters(int a, int b, int count_test) {
