@@ -2,6 +2,7 @@
 #include"Solvers.h"
 #include<vector>
 #include<iostream>
+#include "Random.h"
 #include "find_ways.h"
 using namespace std;
 
@@ -10,11 +11,18 @@ void Solver_for_one_parameter::calculate_metrics()
 	double norma = 0;
 	double average_norm = 0;
 	int time = 1;
+	vector<pair<double, double> > random_x_y(n);
 	for (int j = 0; j < count; j++) {
 		finder_ways finder;
-		graph_ g;
+		graph_ g(n);
+		for (int i = 0; i < n; i++) {
+			double x, y;
+			random_::take_random(x, y, time);
+			time++;
+			g.add_vertex( x, y);
+		}
+		g.build_edges();
 		double my_way, real_way;
-		g.graph_init(n, time);
 		finder.find_ways(g, my_way, real_way);
 		time++;
 		norms.push_back(my_way/real_way);
