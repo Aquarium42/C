@@ -21,7 +21,12 @@ void Solver_for_one_parameter::calculate_metrics()
 			time++;
 			g.add_vertex( x, y);
 		}
-		g.build_edges();
+			for (int i = 0; i < n; i++) {
+				for (int j = i; j < n; j++) {
+					g.add_edge(i, j);
+				}
+			}
+		//sort_edges();
 		double my_way, real_way;
 		finder.find_ways(g, my_way, real_way);
 		time++;

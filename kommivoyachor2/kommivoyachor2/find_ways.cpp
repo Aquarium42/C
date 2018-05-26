@@ -44,16 +44,20 @@ void finder_ways::pre_order(int vertex, vector <int>& path, vector <bool>& color
 void finder_ways::build_ostov_tree(int n, const graph_ & g, vector <vector<int> >& next_vertex) const{
 	vector <int> parent(n);
 	vector<int> size(n);
-	
+	vector <pair <double, pair<int, int> > > my_edges;
+	for (int i = 0; i < g.get_edge_size(); i++) {
+		my_edges.push_back(g.get_edge(i));
+	}
+	sort(my_edges.begin(), my_edges.end());
 	dsu dsu_;
 	for (int i = 0; i < n; i++) {
 		dsu_.make_set(i, parent, size);
 	}
-	for (int i = 0; i < g.get_edge_size(); i++) {
-		if (dsu_.find_set(g.get_edge(i).second.first, parent) != dsu_.find_set(g.get_edge(i).second.second, parent)) {
-			dsu_.union_sets(g.get_edge(i).second.first, g.get_edge(i).second.second, parent, size);
-			next_vertex[g.get_edge(i).second.first].push_back(g.get_edge(i).second.second);
-			next_vertex[g.get_edge(i).second.second].push_back(g.get_edge(i).second.first);
+	for (int i = 0; i < my_edges.size(); i++) {
+		if (dsu_.find_set(my_edges[i].second.first, parent) != dsu_.find_set(my_edges[i].second.second, parent)) {
+			dsu_.union_sets(my_edges[i].second.first, my_edges[i].second.second, parent, size);
+			next_vertex[my_edges[i].second.first].push_back(my_edges[i].second.second);
+			next_vertex[my_edges[i].second.second].push_back(my_edges[i].second.first);
 		}
 	}
 }
