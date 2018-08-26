@@ -1,0 +1,30 @@
+#include <iostream>
+#include <climits>
+using namespace std;
+int main() {
+    int n, m;
+    cin >> n;
+    int *A = new int[n];
+    int *B = new int[n];
+    for (int i = 0; i < n; i++)
+        cin >> A[i];
+    for (int i = 0; i < n; i++)
+        cin >> B[i];
+    int maxSum = INT_MIN, maxB = B[n - 1];
+    int summandAIndex, summandBIndex, maxBIndex;
+    for (int i = n - 1; i >= 0; i--) {
+        if (B[i] >= maxB) {
+            maxB = B[i];
+            maxBIndex = i;
+        }
+        if (A[i] + maxB >= maxSum) {
+            maxSum = A[i] + maxB;
+            summandAIndex = i;
+            summandBIndex = maxBIndex;
+        }
+    }
+    cout << summandAIndex << " " << summandBIndex;
+    delete [] A;
+    delete [] B;
+    return 0;
+}
