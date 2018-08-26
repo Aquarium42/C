@@ -1,0 +1,375 @@
+Минимальное остовное дерево 2018
+Ограничение времени	0.2 секунды
+Ограничение памяти	10Mb
+Ввод	стандартный ввод или kruskal.in
+Вывод	стандартный вывод или kruskal.out
+Дан неориентированный связный граф. Требуется найти вес минимального остовного дерева в этом графе. 
+Вариант 1. С помощью алгоритма Прима.
+Вариант 2. С помощью алгоритма Крускала.
+Вариант 3. С помощью алгоритма Борувки.
+Ваш номер варианта прописан в ведомости.
+Формат ввода
+Первая строка содержит два натуральных числа n и m — количество вершин и ребер графа соответственно (1 ≤ n ≤ 20000, 0 ≤ m ≤ 100000). 
+Следующие m строк содержат описание ребер по одному на строке. 
+Ребро номер i описывается тремя натуральными числами bi, ei и wi — номера концов ребра и его вес соответственно (1 ≤ bi, ei ≤ n, 0 ≤ wi ≤ 100000).
+
+Формат вывода
+Выведите единственное целое число - вес минимального остовного дерева.
+
+Пример 1
+Ввод	Вывод
+4 4
+1 2 1
+2 3 2
+3 4 5
+4 1 4
+7
+Пример 2
+Ввод	Вывод
+5 10
+4 3 3046
+4 5 90110
+5 1 57786
+3 2 28280
+4 3 18010
+4 5 61367
+4 1 18811
+4 2 69898
+3 5 72518
+3 1 85838
+107923
+
+здесь должен быть код
+
+
+Растояние хэмминга
+Расстояние Хэмминга между двумя строками равной длины — это количество индексов, в которых символы этих строк не равны.
+Определим расстояние от шаблона 
+p
+ до строки 
+s
+ как суммарное расстояние Хэмминга от 
+p
+ до всех подстрок 
+s
+, имеющих длину 
+|
+p
+|
+. В строке и в шаблоне некоторые символы стёрты. Нужно восстановить стёртые символы так, чтобы расстояние от 
+p
+ до 
+s
+ было минимально возможным.
+
+Формат ввода
+В первой строке дана строка 
+s
+, во второй — шаблон 
+p
+. Обе строки непусты, имеют длину не более 1000 и состоят из символов ‘0’, ‘1’ и ‘?’. ‘?’ обозначает стёртые символы, которые нужно восстановить. Длина строки 
+p
+ не превосходит длины строки 
+s
+.
+Формат вывода
+В первой строке выведите минимальное расстояние от 
+p
+ до 
+s
+ после восстановления всех стёртых символов. Во второй и третьей строках соответственно выведите 
+s
+ и 
+p
+, в которых символы ‘?’ заменены на ‘0’ и ‘1’.
+Пример
+Ввод	Вывод
+00?
+1?
+2
+000
+10
+
+#include <iostream>
+#include <vector>
+#include<algorithm>
+#include<queue>
+#include <string>
+using namespace std;
+struct edge {
+	edge() {
+		from = 0; to = 0; cost = 0; flow = 0;
+	}
+	int from, to, cost, flow;
+	edge(int from_, int to_, int cost_, int flow_) {
+		from = from_;
+		to = to_;
+		cost = cost_;
+		flow = flow_;
+	}
+};
+class graph {
+
+public:
+	graph(string s_, string temp_) {
+		n = s_.size() + temp_.size() + 2;
+		str = s_;
+		temp = temp_;
+		s = 0;
+		n = find_que();
+		//cout << "n = " << n;
+		to = n + 1;
+		n = n + 2;
+		one_part_max_flow = 0;
+		index.resize(n);
+
+	}
+	void add_edge(int from, int to);
+	int get_one_part_flow() {
+		return one_part_max_flow;
+	}
+	int get_start() {
+		return s;
+	}
+	int get_end() {
+		return to;
+	}
+	int get_size() {
+		return n;
+	}
+	void writing(const vector<int>& distance);
+	void add_edge_(edge new_);
+	int find_que();
+	void building();
+	vector<edge>edges;
+	vector<vector<int> > index;
+
+private:
+	string str, temp;
+	vector<int>question;
+	int n;
+	vector<edge> possible_e;
+	int count_s;
+	int count;
+	int s, to;
+	int one_part_max_flow;
+};
+int graph::find_que() {
+
+	count_s = 0, count = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if (str[i] == '?') {
+			question.push_back(i);
+			count++;
+		}
+	}
+	count_s = count;
+	for (int i = 0; i < temp.size(); i++) {
+		if (temp[i] == '?') {
+			count++;
+			question.push_back(i);
+		}
+	}
+	return count;
+}
+
+void graph::building() {
+	for (int i = 0; i < question.size(); i++) {
+		edge m = { s, i + 1, 0, 0 };
+		possible_e.push_back(m);
+	}
+	for (int i = 0; i < question.size(); i++) {
+		edge m = { i + 1, to, 0, 0 };
+		possible_e.push_back(m);
+	}
+	int num_q_t = 0;
+	int num_q_s = 0;
+	int k = 0;
+	for (int i = 0; i <temp.size(); i++)
+	{
+		int num_q_s_ = num_q_s;
+
+		for (int j = 0; j < str.size() - temp.size() + 1; j++)
+		{
+			//		cout << "num_q_s_ = " << num_q_s_ << endl;
+			if ((temp[i] == '0' && str[j + i] == '1') || (temp[i] == '1' && str[j + i] == '0')) {
+				one_part_max_flow++;
+				continue;
+			}
+			else if (temp[i] == '?' || str[i + j] == '?') {
+				if (temp[i] == '0') {
+					possible_e[num_q_s_].cost++;
+					num_q_s_++;
+
+				}
+				else if (temp[i] == '1') {
+					possible_e[num_q_s_ + question.size()].cost++;
+					//add_edge(num_q_s_+1, to);
+					num_q_s_++;
+				}
+				else if (str[j + i] == '0') {
+					possible_e[num_q_t + count_s].cost++;
+					//add_edge(s, num_q_t + count_s + 1);
+					k++;
+				}
+
+				else if (str[j + i] == '1') {
+					possible_e[num_q_t + count_s + question.size()].cost++;
+					//add_edge(num_q_t + count_s + 1, to);
+					k++;
+				}
+				else {
+
+					add_edge(num_q_t + count_s + 1, num_q_s_ + 1);
+					num_q_s_++;
+					//cout << "WHETE mum_q_S_" << num_q_s_ << endl;
+					k++;
+				}
+			}
+		}
+
+		//	cout << "num_q_s after cycle= " << num_q_s << endl;
+
+		//cout << "num_q_t= " << num_q_t << endl;
+		if (str[i] == '?') {
+			num_q_s++;
+		}
+		if (k != 0) {
+			num_q_t++;
+			k = 0;
+		}
+
+		//	cout << "num_q_s after all= " << num_q_s << endl;
+
+		//cout << "num_q_t after all= " << num_q_t << endl;
+
+	}
+
+	for (int i = 0; i < possible_e.size(); i++) {
+		if (possible_e[i].cost > 0) {
+			add_edge_(possible_e[i]);
+		}
+	}
+}
+void graph::add_edge_(edge new_) {
+	edge new_edge = { new_.from, new_.to, new_.cost, 0 };
+	edges.push_back(new_edge);
+	index[new_.from].push_back((int)edges.size() - 1);
+	new_edge = { new_.to, new_.from, new_.cost, 0 };
+	edges.push_back(new_edge);
+	index[new_.to].push_back((int)edges.size() - 1);
+}
+
+void graph::add_edge(int from, int to) {
+	edge new_edge = { from, to, 1, 0 };
+	edges.push_back(new_edge);
+	index[from].push_back((int)edges.size() - 1);
+	new_edge = { to, from, 1, 0 };
+	edges.push_back(new_edge);
+	index[to].push_back((int)edges.size() - 1);
+}
+
+
+int bfs(graph& g, vector<int>& distance) {
+	distance.assign(g.get_size(), -1);
+	queue <int> q;
+	q.push(g.get_start());
+	distance[g.get_start()] = 0;
+	while (!q.empty()) {
+
+		int v = q.front();
+		q.pop();
+
+		for (int i = 0; i < g.index[v].size(); ++i) {
+
+			int id = g.index[v][i];
+			int to = g.edges[id].to;
+			if (distance[to] == -1 && g.edges[id].flow < g.edges[id].cost) {
+				q.push(to);
+				distance[to] = distance[v] + 1;
+			}
+
+		}
+	}
+	return distance[g.get_end()] != -1;
+}
+
+int dfs(int v, int flow, vector<int>& ptr, const vector<int>& distance, graph& g) {
+
+	if (v == g.get_end() || flow == 0) {
+		return flow;
+	}
+
+	for (; ptr[v] < g.index[v].size(); ++ptr[v]) {
+		int id = g.index[v][ptr[v]];
+		if (distance[g.edges[id].to] != distance[v] + 1) { continue; }
+
+		int pushed = dfs(g.edges[id].to, min(flow, g.edges[id].cost - g.edges[id].flow), ptr, distance, g);
+		if (pushed > 0) {
+			g.edges[id].flow += pushed;
+			if (id % 2 == 0) {
+				g.edges[id + 1].flow -= pushed;
+			}
+			else g.edges[id - 1].flow -= pushed;
+			return pushed;
+		}
+	}
+	return 0;
+}
+
+int max__flow(graph& g, vector<int> & distance) {
+	
+	int flow = 0;
+	for (;;) {
+		if (!bfs(g, distance))  break;
+
+		vector <int> ptr(g.get_size(), 0);
+		while (int pushed = dfs(g.get_start(), 1000000000, ptr, distance, g))
+			flow += pushed;
+	}
+	//cout << "fl" << flow << endl;
+	return flow + g.get_one_part_flow();
+}
+void graph::writing(const vector<int>& distance) {
+	for (int i = 1; i < count_s + 1; i++) {
+		if (str[question[i - 1]] == '?') {
+			if (distance[i] == -1) {
+
+				str[question[i - 1]] = '1';
+
+			}
+			else str[question[i - 1]] = '0';
+		}
+	}
+	for (int i = count_s + 1; i < question.size() + 1; i++) {
+		if (temp[question[i - 1]] == '?') {
+			if (distance[i] == -1) {
+
+				temp[question[i - 1]] = '1';
+
+			}
+			else temp[question[i - 1]] = '0';
+		}
+	}
+	cout << str << endl;
+	cout << temp << endl;
+}
+using namespace std;
+int main()
+{
+	string s, temp;
+	cin >> s;
+	cin >> temp;
+	int n;
+
+	//s = "0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?0?";
+	//temp = "?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1?1";
+	graph g(s, temp);
+	int one_part_max_flow = 0;
+	g.building();
+	vector<int> distance;
+	cout << max__flow(g, distance)<<endl;
+	g.writing(distance);
+	return 0;
+}
+//это не точно...
